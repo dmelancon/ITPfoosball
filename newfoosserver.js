@@ -146,6 +146,7 @@ var createNewPlayer = function(cardNum){
       console.log('Error on save!');
     }else{
       console.log("Player saved!");
+    }
     });
   //return newPlayer;
 }
