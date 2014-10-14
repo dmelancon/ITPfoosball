@@ -3,10 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser')
 var app = express();
 
-///app.set('port', process.env.PORT || 3000);
-//app.use(express.logger('dev'));  /* 'default', 'short', 'tiny', 'dev' */
 app.use(bodyParser());
-//app.use(express.static(path.join(__dirname, 'site')));
 
 if (!module.parent) {
   app.listen(3000);
@@ -41,7 +38,7 @@ var teamSchema = Schema({
 });                      
 
 var playerSchema = Schema({
-  playerID: Number,
+  playerID: String,
   name: String,
   wins: Number,
   losses: Number                                    //maybe dont need 
@@ -67,7 +64,9 @@ app.get('/', function(req, res) {
 app.get('/newPlayer', function(req, res) { 
   console.log(req.query['playerID']);
   createNewPlayer(req.query['playerID']);
+  res.end("New Player :" + req.query['playerID'] + " Logged");
 });
+
 
 //SETUP NEW GAME		
 app.get('/newGame', function(req, res) { 
@@ -75,6 +74,7 @@ app.get('/newGame', function(req, res) {
   newRedTeam = new Team();
   newBlueTeam = new Team();
   console.log("New Game Initiated!");
+  res.end("New Game Initiated!");  
   });
 
 //ADD RED TEAM PLAYERS
@@ -82,12 +82,14 @@ app.get('/redTeam', function(req, res) {
   Player.findOne({ 'playerID': req.query['playerOneID'] }, function (err, person) {      //fix with findone and update
     if (err) return handleError(err);
     console.log(person.name + " is ready to play for Red Team"); 
+    res.end(person.name + " is ready to play for Red Team");
     newRedTeam.players.push(person.playerID);
     redTeamUpdate();
    })
   Player.findOne({ 'playerID': req.query['playerTwoID'] }, function (err, person) {
     if (err) return handleError(err);
     console.log(person.name + " is ready to play for Red Team"); 
+    res.end(person.name + " is ready to play for Red Team"); 
     newRedTeam.players.push(person.playerID);
     redTeamUpdate();
   })
@@ -98,6 +100,7 @@ app.get('/blueTeam', function(req, res) {
   Player.findOne({ 'playerID': req.query['playerOneID'] }, function (err, person) {
     if (err) return handleError(err);
     console.log(person.name + " is ready to play for Blue Team"); 
+    res.end(person.name + " is ready to play for Blue Team"); 
     newBlueTeam.players.push(person.playerID);
     blueTeamUpdate();
   })
@@ -105,6 +108,7 @@ app.get('/blueTeam', function(req, res) {
   Player.findOne({ 'playerID': req.query['playerTwoID'] }, function (err, person) {
     if (err) return handleError(err);                                        //can probably add new Player here
     console.log(person.name + " is ready to play for Blue Team"); 
+    res.end(person.name + " is ready to play for Blue Team"); 
     newBlueTeam.players.push(person.playerID);
     blueTeamUpdate();
   })
@@ -116,6 +120,7 @@ app.get('/gameStart', function(req, res) {
   newGame.teams.push(newBlueTeam);
   newGameUpdate();
   console.log("Game Started!")
+  res.end("Game Started!")
 });
 
 //INPUT SCORES
@@ -138,9 +143,9 @@ var createNewPlayer = function(cardNum){
   newPlayer.playerID = cardNum;
   newPlayer.save(function (err) {
     if (err){
-      console.log ('Error on save!');
+      console.log('Error on save!');
     }else{
-      console.log("Player saved!");}
+      console.log("Player saved!");
     });
   //return newPlayer;
 }
