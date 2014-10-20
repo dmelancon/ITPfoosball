@@ -29,19 +29,20 @@ var gameSchema = Schema({
    teams: [teamSchema],                       
    timeDate: { type: Date, default: Date.now }
 
-})
+});
 
 var teamSchema = Schema({
-  players : [{ type: Number, ref: 'Player' }],      //holds reference to players' playerID
-  score : Number,
+  players : [{ type: String, ref: 'Player' }],      //holds reference to players' playerID
+  score : { type: Number, default: 0 },
   win: Boolean                                      //maybe dont need
 });                      
 
 var playerSchema = Schema({
   playerID: String,
   name: String,
-  wins: Number,
-  losses: Number                                    //maybe dont need 
+  wins: { type: Number, default: 0 },
+  losses: { type: Number, default: 0 },
+  goals: { type: Number, default: 0 }                          //maybe dont need 
 });
 
 //======================================================
@@ -55,6 +56,9 @@ var Team = mongoose.model('Team', teamSchema);
 var newGame = new Game();
 var newRedTeam = new Team();
 var newBlueTeam = new Team();
+var redScore = 0;
+var blueScore = 0;
+
 
 app.get('/', function(req, res) {
     res.send('Hello World');
@@ -71,9 +75,11 @@ app.get('/newPlayer', function(req, res) {
 //SETUP NEW GAME		
 app.get('/newGame', function(req, res) { 
   newGame = new Game();
+  console.log(newGame._id)
   newRedTeam = new Team();
   newBlueTeam = new Team();
   console.log("New Game Initiated!");
+  res.send(newGame._id + '\n' + newRedTeam._id + '\n' + newBlueTeam._id);
   res.end("New Game Initiated!");  
   });
 
@@ -124,6 +130,15 @@ app.get('/gameStart', function(req, res) {
 });
 
 //INPUT SCORES
+
+app.get('/redGoal', function(req, res) { 
+  redTeamScore(req.query['playerID']);
+});
+
+app.get('/blueGoal', function(req, res) { 
+  blueTeamScore(req.query['playerID']);
+});
+
 
 
 
@@ -181,6 +196,46 @@ var newGameUpdate = function(){
       console.log("New Game Logged!");}
   })
 }
+
+
+
+var redTeamScore = function(playerID){
+  newRedTeam.score += 1;
+  Player.findOne({ 'playerID': playerID }, function (err, person) {
+  if (err) return handleError(err);                                        //can probably add new Player here
+    console.log(person.name + " Scored!"); 
+    person.goals += 1; 
+    person.save(function (err) {
+      if (err){
+        console.log('Error on save!');
+      }else{
+        console.log("Player Score saved!");
+      }
+    });
+  });
+  redTeamUpdate();
+}
+
+var blueTeamScore = function(playerID){
+  newBlueTeam.score += 1;
+  Player.findOne({ 'playerID': playerID }, function (err, person) {
+  if (err) return handleError(err);                                        //can probably add new Player here
+    console.log(person.name + " Scored!"); 
+    person.goals += 1; 
+    person.save(function (err) {
+      if (err){
+        console.log('Error on save!');
+      }else{
+        console.log("Player Score saved!");
+      }
+    });
+  });
+  blueTeamUpdate();
+}
+
+
+
+
 
 
 
