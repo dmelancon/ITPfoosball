@@ -235,7 +235,7 @@ var blueTeamScore = function(playerID){
 var redTeamRecord = function(win){
   newRedTeam.win = win;
   for (var x = 0; x < newRedTeam.players.length;x++){
-    Player.findOne({ 'playerID': newRedTeam.players[x].playerID }, function (err, person) {
+    Player.findOne({ 'playerID': newRedTeam.players[x] }, function (err, person) {
     if (err) return handleError(err);                                        //can probably add new Player here
       if (win == true) person.wins += 1; 
       if (win == false) person.losses += 1; 
@@ -255,7 +255,7 @@ var redTeamRecord = function(win){
 var blueTeamRecord = function(win){
   newBlueTeam.win = win;
   for (var x = 0; x < newBlueTeam.players.length;x++){
-    Player.findOne({ 'playerID': newBlueTeam.players[x].playerID }, function (err, person) {
+    Player.findOne({ 'playerID': newBlueTeam.players[x] }, function (err, person) {
     if (err) return handleError(err);                                        //can probably add new Player here
       if (win == true) person.wins += 1; 
       if (win == false) person.losses += 1; 
