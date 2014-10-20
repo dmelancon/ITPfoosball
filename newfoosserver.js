@@ -32,7 +32,7 @@ var gameSchema = Schema({
 
 var teamSchema = Schema({
   players : [{ type: String, ref: 'Player' }],      //holds reference to players' playerID
-  score : { type: Number, default: 0 },
+  score : { type: Number, default: 0  },
   win: Boolean                                
 });                      
 
@@ -118,8 +118,6 @@ app.get('/blueTeam', function(req, res) {
 
 //START NEW GAME
 app.get('/gameStart', function(req, res) { 
-  newGame.teams.push(newRedTeam);
-  newGame.teams.push(newBlueTeam);
   newGameUpdate();
   console.log("Game Started!")
   res.end("Game Started!")
@@ -140,6 +138,8 @@ app.get('/blueGoal', function(req, res) {
 app.get('/gameOver', function(req, res) {
     redTeamRecord(req.query['redTeam']);         //true or false
     blueTeamRecord(req.query['blueTeam']);
+    newGame.teams.push(newRedTeam);
+    newGame.teams.push(newBlueTeam);
     newGameUpdate();
     res.end("Game Over");
 });
@@ -196,8 +196,7 @@ var newGameUpdate = function(){
   })
 }
 
-
-
+//team goals
 var redTeamScore = function(playerID){
   newRedTeam.score += 1;
   Player.findOne({ 'playerID': playerID }, function (err, person) {
@@ -232,6 +231,8 @@ var blueTeamScore = function(playerID){
   });
   blueTeamUpdate();
 }
+
+// updatd Final Scores
 
 var redTeamRecord = function(win){
   newRedTeam.win = win;
