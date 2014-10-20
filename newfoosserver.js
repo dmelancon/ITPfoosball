@@ -28,13 +28,12 @@ var Schema = mongoose.Schema;
 var gameSchema = Schema({
    teams: [teamSchema],                       
    timeDate: { type: Date, default: Date.now }
-
 });
 
 var teamSchema = Schema({
   players : [{ type: String, ref: 'Player' }],      //holds reference to players' playerID
   score : { type: Number, default: 0 },
-  win: Boolean                                      //maybe dont need
+  win: Boolean                                
 });                      
 
 var playerSchema = Schema({
@@ -42,7 +41,7 @@ var playerSchema = Schema({
   name: String,
   wins: { type: Number, default: 0 },
   losses: { type: Number, default: 0 },
-  goals: { type: Number, default: 0 }                          //maybe dont need 
+  goals: { type: Number, default: 0 }                          
 });
 
 //======================================================
@@ -56,9 +55,6 @@ var Team = mongoose.model('Team', teamSchema);
 var newGame = new Game();
 var newRedTeam = new Team();
 var newBlueTeam = new Team();
-var redScore = 0;
-var blueScore = 0;
-
 
 app.get('/', function(req, res) {
     res.send('Hello World');
@@ -133,17 +129,19 @@ app.get('/gameStart', function(req, res) {
 
 app.get('/redGoal', function(req, res) { 
   redTeamScore(req.query['playerID']);
+  res.end("Red Team Scores!");
 });
 
 app.get('/blueGoal', function(req, res) { 
   blueTeamScore(req.query['playerID']);
+  res.end("Red Team Scores!");
 });
 
-
-
-
-
-
+app.get('/gameOver', function(req, res) {
+    redTeamRecord(req.query['redTeam']);         //true or false
+    blueTeamRecord(req.query['blueTeam']);
+    res.end("Game Over");
+});
 
 //======================================================
 //====================SET UP FUNCTIONS=====================
@@ -217,7 +215,8 @@ var redTeamScore = function(playerID){
 }
 
 var blueTeamScore = function(playerID){
-  newBlueTeam.score += 1;
+  newBlueTeam.score += 1
+  console
   Player.findOne({ 'playerID': playerID }, function (err, person) {
   if (err) return handleError(err);                                        //can probably add new Player here
     console.log(person.name + " Scored!"); 
@@ -233,6 +232,44 @@ var blueTeamScore = function(playerID){
   blueTeamUpdate();
 }
 
+var redTeamRecord = function(win){
+  newRedTeam.win = win;
+  for (var x = 0; x < newRedTeam.players.length;x++){
+    Player.findOne({ 'playerID': newRedTeam.players[x].playerID }, function (err, person) {
+    if (err) return handleError(err);                                        //can probably add new Player here
+      if (win == true) person.wins += 1; 
+      if (win == false) person.losses += 1; 
+      person.save(function (err) {
+        if (err){
+          console.log('Error on save!');
+        }else{
+          console.log("Player Score saved!");
+        }
+      });
+    });
+  }
+  redTeamUpdate();
+}
+
+
+var blueTeamRecord = function(win){
+  newBlueTeam.win = win;
+  for (var x = 0; x < newBlueTeam.players.length;x++){
+    Player.findOne({ 'playerID': newBlueTeam.players[x].playerID }, function (err, person) {
+    if (err) return handleError(err);                                        //can probably add new Player here
+      if (win == true) person.wins += 1; 
+      if (win == false) person.losses += 1; 
+      person.save(function (err) {
+        if (err){
+          console.log('Error on save!');
+        }else{
+          console.log("Player Score saved!");
+        }
+      });
+    });
+  }
+  blueTeamUpdate();
+}
 
 
 
