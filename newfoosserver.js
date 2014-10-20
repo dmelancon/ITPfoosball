@@ -140,6 +140,7 @@ app.get('/blueGoal', function(req, res) {
 app.get('/gameOver', function(req, res) {
     redTeamRecord(req.query['redTeam']);         //true or false
     blueTeamRecord(req.query['blueTeam']);
+    newGameUpdate();
     res.end("Game Over");
 });
 
